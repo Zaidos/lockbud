@@ -3,9 +3,9 @@ require 'slim'
 require 'serialport'
 
 port_str = ENV['USB_PORT']
-baud_rate = ENV['BAUD_RATE']
-data_bits = ENV['DATA_BITS']
-stop_bits = ENV['STOP_BITS']
+baud_rate = 9600
+data_bits = 8
+stop_bits = 1
 parity = SerialPort::NONE
 
 configure do
@@ -20,9 +20,9 @@ end
 
 post '/' do
   if params[:passcode] == ENV['PASSCODE']
-    serial = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
-    serial.write('o')
-    serial.close
+    SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity) do |serial|
+      serial.write('o')
+    end
     slim :success
   else
     @flash = "Incorrect passcode. Try again."
